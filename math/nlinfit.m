@@ -27,6 +27,7 @@ elseif sz(1) == 1 & sz(2) >  1 | sz(2) == 1 & sz(1) >  1
             start = pars ;
 end
 
+
 % Minimize parameters
          A     = fminsearch(@(a)sum( (y - rhs(a,x,varargin{:})).^2 ),start) ;
          yfit  = rhs(A,x,varargin{:}) ;

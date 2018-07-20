@@ -179,7 +179,7 @@ z      = movmean(A{:,Iz},10/sr) ;
 if startsWith(showz,'y'); figure; plot(dnum,z,'b'); hold on; end
 
 dz     = gradient(z,dnum*24*3600) ;					% compute downward velocity 
-z( [1:nvalues]' < warmup/sr | dz<=0.001  ) = nan ;			% get rid of start and end values
+z( [1:nvalues]' < warmup/sr | dz<=0.005  ) = nan ;			% get rid of start and end values
 [~,Im] = min(z) ;							% find min depth 
 [~,IM] = max(z) ;							% find max depth 
 I      = find(dz > dzthres & [1:nvalues]' > Im & [1:nvalues]' < IM)  ;	% select down-going between min z and max z
