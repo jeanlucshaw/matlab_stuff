@@ -1,5 +1,5 @@
-function MOM = genopt(Q,X,dom,NP,NI,pc,pm)
-% Synthax:         MOM = genopt(@Q,@X,dom,NP,NI,pc,pm)
+function [A,HS] = genopt(Q,C,dom,NP,NI,pc,pm)
+% Synthax:         [A,HS] = genopt(@Q,@X,dom,NP,NI,pc,pm)
 %
 % Optimisation routine following a genetic algorithm. Returns the best parameter
 % set which solves the problem expressed by the anonymous function 'Q', when 
@@ -33,12 +33,11 @@ for kk = 1:NI
 	PP	= PP(RK,:) ;
 	
 	%TEST
-	if X(HS(1)) ; break; end
+	if HS(1) < C ; break; end
 	
 	%SELECTION
-	DICE    = randi([2 4]) ;
 	MOM 	= PP(1,   :) ;
-	DAD	= PP(DICE,:) ;
+	DAD	= PP(randi([2 4]),:) ;
 
 	%REPRODUCTION
 	PP(1,:) = MOM ;
@@ -62,5 +61,9 @@ for kk = 1:NI
 		end
 	end
 end
+disp(['Last iteration: ' num2str(kk)]) ;
 
+% OUTPUT
+A  = MOM ;
+HS = HS(1) ;
 end
