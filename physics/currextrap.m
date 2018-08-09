@@ -56,9 +56,9 @@ for ii = 1:2:nargin-5
 		case 'section'
 			switch varargin{ii+1}
 				case 'top'
-					W	= zc/z;
+					W	= zc./z;
 				case 'bottom'
-					W	= z/zc;
+					W	= z./zc;
 				case 'all'
 					W	= ones(size(z));
 			end

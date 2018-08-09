@@ -1,4 +1,4 @@
-function points2grid(x,y,m_map,varargin)
+function [varargout] = points2grid(x,y,m_map,varargin)
 % Synthax :       points2grid(x,y,m_map,varargin)
 %
 % Takes as input a grid of coordinates contained in 'x' and 'y' with the
@@ -15,6 +15,10 @@ function points2grid(x,y,m_map,varargin)
 % The subsequent arguments are taken as the property/value pair of the
 % plotted grid itself.
 %
+
+% Options 
+% default
+% 
 
 % input size
 [M,N] = size(x) ;
@@ -35,6 +39,10 @@ INTERPy = scatteredInterpolant(2*I,2*J,yvec(:), ...
 % Extrapolation
 X = INTERPx(indexx',indexy') ;
 Y = INTERPy(indexx',indexy') ;
+
+% Save full grid for output
+FX = X ;
+FY = Y ;
 
 % Replace initial nan values
 [I,J]   = find(isnan(x) | isnan(y)) ;
@@ -183,5 +191,19 @@ end
 for jj = 1:2:2*N+1
     plot(X(:,jj),Y(:,jj),varargin{:})
 end
+end
+
+% Manage output
+if 	nargout==2
+	varargout{1} = X ; 
+	varargout{2} = Y ; 
+elseif	nargout==4
+	varargout{1} = X ; 
+	varargout{2} = Y ; 
+	varargout{3} = FX ; 
+	varargout{4} = FY ; 
+elseif	nargout==0
+else
+	varargout = [] ;
 end
 end

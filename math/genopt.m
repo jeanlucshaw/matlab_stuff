@@ -1,5 +1,5 @@
-function [A,HS] = genopt(Q,C,dom,NP,NI,pc,pm)
-% Synthax:         [A,HS] = genopt(@Q,@X,dom,NP,NI,pc,pm)
+function [A,S] = genopt(Q,C,dom,NP,NI,pc,pm)
+% Synthax:         [A,S] = genopt(@Q,@X,dom,NP,NI,pc,pm)
 %
 % Optimisation routine following a genetic algorithm. Returns the best parameter
 % set which solves the problem expressed by the anonymous function 'Q', when 
@@ -61,9 +61,9 @@ for kk = 1:NI
 		end
 	end
 end
-disp(['Last iteration: ' num2str(kk)]) ;
+%disp(['Last iteration: ' num2str(kk)]) ;
 
 % OUTPUT
 A  = MOM ;
-HS = HS(1) ;
+S  = HS(1) ;
 end
