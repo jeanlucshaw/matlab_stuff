@@ -1,4 +1,4 @@
-function [u,v] = ctrspd(x1,y1,x2,y2,t) 
+function [u,v] = ctrspd(x1,y1,x2,y2,t,frame) 
 % Synthax :         [u,v] = ctrspd(x1,y1,x2,y2,t)
 %
 % Calculates the speed at which a contour travels perpendicularly to itself.
@@ -9,6 +9,12 @@ function [u,v] = ctrspd(x1,y1,x2,y2,t)
 % 	Inputs are coordinates at t_1 : x1,y1
 %		   coordinates at t_2 : x2,y2
 %      		   times 1 & 2        : t 
+%		   coordinate type    : 'll' for longitude/latitude
+%				        'xy' for cartesian
+%
+% If frame = 'll', speeds are returned in meters by the time unit of 't', if
+% supplied coordinates are cartesian, the speeds are in the coordinate unit
+% supplied by the time unit supplied.
 %
 % Where t is size two vector. Contours may be periodic or non periodic. The
 % beginning and ends of the contour will be handled differently in these
@@ -25,29 +31,29 @@ warning('off','MATLAB:nearlySingularMatrix') ;
 
 % MAKE CONTOURS PERIODIC according to prior periodicity
 if     x1(1) == x1(end) & y1(1) == y1(end) & x2(1) == x2(end) & y2(1) == y2(end) 
-	x1 = [x1(end-1) x1(1:end-1) x1(1)] ;
-	y1 = [y1(end-1) y1(1:end-1) y1(1)] ;
-	x2 = [x2(end-1) x2(1:end-1) x2(1)] ;
-	y2 = [y2(end-1) y2(1:end-1) y2(1)] ;
+	x1 = oreo(x1(1:end-1),x1(end-1),x1(1)) ;
+	y1 = oreo(y1(1:end-1),y1(end-1),y1(1)) ;
+	x2 = oreo(x2(1:end-1),x2(end-1),x2(1)) ;
+	y2 = oreo(y2(1:end-1),y2(end-1),y2(1)) ;
 	per1	= true;
 	per2	= true;
 elseif x1(1) == x1(end) & y1(1) == y1(end) & x2(1) ~= x2(end) & y2(1) ~= y2(end) 
-	x1 = [x1(end-1) x1(1:end-1) x1(1)] ;
-	y1 = [y1(end-1) y1(1:end-1) y1(1)] ;
-	x2 = [x2(end) x2 x2(1)] ;
-	y2 = [y2(end) y2 y2(1)] ;
+	x1 = oreo(x1(1:end-1),x1(end-1),x1(1)) ;
+	y1 = oreo(y1(1:end-1),y1(end-1),y1(1)) ;
+	x2 = oreo(x2,x2(end),x2(1)) ;
+	y2 = oreo(y2,y2(end),y2(1)) ;
 	per1	= true;
 elseif x1(1) ~= x1(end) & y1(1) ~= y1(end) & x2(1) ~= x2(end) & y2(1) ~= y2(end) 
-	x1 = [x1(end) x1 x1(1)] ;
-	y1 = [y1(end) y1 y1(1)] ;
-	x2 = [x2(end-1) x2(1:end-1) x2(1)] ;
-	y2 = [y2(end-1) y2(1:end-1) y2(1)] ;
+	x1 = oreo(x1,x1(end),x1(1)) ;
+	y1 = oreo(y1,y1(end),y1(1)) ;
+	x2 = oreo(x2(1:end-1),x2(end-1),x2(1)) ;
+	y2 = oreo(y2(1:end-1),y2(end-1),y2(1)) ;
 	per2	= true;
 else
-	x1 = [x1(end) x1 x1(1)] ;
-	y1 = [y1(end) y1 y1(1)] ;
-	x2 = [x2(end) x2 x2(1)] ;
-	y2 = [y2(end) y2 y2(1)] ;
+	x1 = oreo(x1,x1(end),x1(1)) ;
+	y1 = oreo(y1,y1(end),y1(1)) ;
+	x2 = oreo(x2,x2(end),x2(1)) ;
+	y2 = oreo(y2,y2(end),y2(1)) ;
 end
 
 % OUTPUT VARIABLES
@@ -101,7 +107,12 @@ for ii = 2:numel(x1) - 1
 	X	= A\B ;
 
 	% Calculate angle and magnitude of velocity
-	dist	= sqrt( (x1(ii) - X(1)).^2 + (y1(ii) - X(2)).^2 ) ;
+	switch frame
+		case 'xy'
+			dist	= sqrt( (x1(ii) - X(1)).^2 + (y1(ii) - X(2)).^2 ) ;
+		case 'll'
+			dist	= m_lldist([x1(ii) X(1)],[y1(ii) X(2)])*1000 ;
+		end
 	the	= range_pm180_2_360( atan2d(X(2)-y1(ii),X(1)-x1(ii))) ;
 
 	% Decompose into components
@@ -123,10 +134,24 @@ if per1 ; u = app(u,u(1)) ; v = app(v,v(1)) ; end
 function y = app(x,v)
 
 if iscolumn(x)
+	if ~iscolumn(v); v = v'; end
 	y = [x;v] ;
 else
+	if  iscolumn(v); v = v'; end
 	y = [x v] ;
 end
 end
 
+function y = oreo(x,vp,va)
+
+if iscolumn(x)
+	if ~iscolumn(vp); vp = vp'; end
+	if ~iscolumn(va); va = va'; end
+	y = [vp;x;va] ;
+else
+	if  iscolumn(vp); vp = vp'; end
+	if  iscolumn(va); va = va'; end
+	y = [vp x va] ;
+end
+end
 end

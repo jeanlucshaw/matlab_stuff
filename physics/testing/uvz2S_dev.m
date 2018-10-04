@@ -1,3 +1,27 @@
+clear all;
+
+M	= 10 ;
+N	= 100;
+L	= 5;
+
+A	= repmat([1:M]',[1 N L]) ;
+B	= repmat([1:N] ,[M 1 L]) ;
+Cp	= nan([1,1,L]) ;
+Cp(:)	= 1:L ;
+C	= repmat(Cp ,[M N 1]) ;
+Zp	= [0:M]' ;
+%Zp	= [1:M].^2 ; Zp	= Zp' ;
+Z	= repmat(Zp,[1 N L]) ;
+
+[Ax,Ay,Az]	= gradient(A,1,Z,1) ;
+[Bx,By,Bz]	= gradient(B,1,Z,1) ;
+[Cx,Cy,Cz]	= gradient(C,1,Z,1) ;
+
+u	= repmat(sqrt(2).*[1:M]',[1 N L]) ;
+v	= repmat(sqrt(2).*[1:M]',[1 N L]) ;
+
+S	= uvz2S(u,v,Z) ;
+
 function S = uvz2S(u,v,z)
 % Synthax:            S = uvz2S(u,v,z)
 % 
